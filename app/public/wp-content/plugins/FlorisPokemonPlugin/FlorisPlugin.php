@@ -4,8 +4,6 @@
 // Version: 1.0
 // Author: Floris
 
-
-
 if (!defined('ABSPATH')) exit;
 
 // settings page code
@@ -102,14 +100,13 @@ function pap_shortcode()
 
     $data = pap_get_pokemon_data($pokemon);
     if (!$data) {
-    return "<div class='pokemon-viewer pokemon-error'>
-                <h2>❌ Pokémon niet gevonden</h2>
-                <p>Controleer de naam in de plugin instellingen.</p>
+        return "<div class='pokemon-api-plugin pokemon-error'>
+                <h2>Pokemon niet gevonden</h2>
             </div>";
-}
+    }
 
 
-    $output = "<div class='pokemon-viewer'><h2>" . ucfirst($data['name']) . "</h2>";
+    $output = "<div class='pokemon-api-plugin'><h2>" . ucfirst($data['name']) . "</h2>";
 
     if ($show_image) {
         $output .= "<img src='" . $data['sprites']['front_default'] . "'>";

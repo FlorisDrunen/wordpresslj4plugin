@@ -1,5 +1,5 @@
 /* Container */
-.pokemon-viewer {
+.pokemon-api-plugin {
     max-width: 420px;
     background: linear-gradient(145deg, #ffffff, #f2f2f2);
     border-radius: 18px;
@@ -12,7 +12,7 @@
 }
 
 /* Title */
-.pokemon-viewer h2 {
+.pokemon-api-plugin h2 {
     font-size: 26px;
     margin-bottom: 12px;
     text-transform: capitalize;
@@ -20,7 +20,7 @@
 }
 
 /* Image */
-.pokemon-viewer img {
+.pokemon-api-plugin img {
     width: 160px;
     height: auto;
     margin: 10px 0 20px;
@@ -28,12 +28,12 @@
     transition: transform 0.3s ease;
 }
 
-.pokemon-viewer img:hover {
+.pokemon-api-plugin img:hover {
     transform: scale(1.1) rotate(-3deg);
 }
 
 /* Section titles */
-.pokemon-viewer h3 {
+.pokemon-api-plugin h3 {
     margin-top: 22px;
     margin-bottom: 10px;
     font-size: 16px;
@@ -43,14 +43,14 @@
 }
 
 /* Lists */
-.pokemon-viewer ul {
+.pokemon-api-plugin ul {
     list-style: none;
     padding: 0;
     margin: 0;
 }
 
 /* Stats grid */
-.pokemon-viewer ul li {
+.pokemon-api-plugin ul li {
     background: #fff;
     padding: 8px 12px;
     margin: 6px 0;
@@ -62,7 +62,7 @@
 }
 
 /* Abilities badges */
-.pokemon-viewer h3 + ul li {
+.pokemon-api-plugin h3 + ul li {
     justify-content: center;
     background: #2998fa;
     color: white;
@@ -70,14 +70,3 @@
     box-shadow: none;
 }
 
-/* Responsive */
-@media (max-width: 480px) {
-    .pokemon-viewer {
-        max-width: 95%;
-        padding: 18px;
-    }
-
-    .pokemon-viewer img {
-        width: 130px;
-    }
-}
