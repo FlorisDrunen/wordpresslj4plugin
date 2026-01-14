@@ -1,63 +1,86 @@
 <?php
-/*
-Plugin Name: Pokémon Viewer
-Description: Toont Pokémon via de PokeAPI met instelbare opties.
-Version: 1.1
-Author: Jouw Naam
-*/
+// Plugin Name: Pokemon api plugin
+// Description: laat pokemon zien die je in de settings kan aanpassen.
+// Version: 1.0
+// Author: Floris
+
+
 
 if (!defined('ABSPATH')) exit;
 
-/* ========== SETTINGS PAGE ========== */
-
-add_action('admin_menu', 'pv_add_menu');
-function pv_add_menu() {
-    add_menu_page('Pokémon Viewer', 'Pokémon Viewer', 'manage_options', 'pokemon-viewer', 'pv_settings_page');
+// settings page code
+add_action('wp_enqueue_scripts', 'pap_load_styles');
+function pap_load_styles()
+{
+    wp_enqueue_style(
+        'pap-style',
+        plugin_dir_url(__FILE__) . 'style.css'
+    );
 }
 
-add_action('admin_init', 'pv_register_settings');
-function pv_register_settings() {
-    register_setting('pv_settings', 'pv_pokemon');
-    register_setting('pv_settings', 'pv_mode');
-    register_setting('pv_settings', 'pv_show_image');
-    register_setting('pv_settings', 'pv_max_abilities');
+
+add_action('admin_menu', 'pap_add_menu');
+function pap_add_menu()
+{
+    add_menu_page('Pokémon api plugin', 'Pokemon api plugin', 'manage_options', 'pokemon-api-plugin', 'pap_settings_page');
 }
 
-function pv_settings_page() {
+add_action('admin_init', 'pap_register_settings');
+
+// options in options page
+function pap_register_settings()
+{
+    register_setting('pap_settings', 'pap_pokemon');
+    register_setting('pap_settings', 'pap_mode');
+    register_setting('pap_settings', 'pap_show_image');
+    register_setting('pap_settings', 'pap_max_abilities');
+}
+// options page itself
+function pap_settings_page()
+{
 ?>
-<div class="wrap">
-<h1>Pokémon Viewer</h1>
-<form method="post" action="options.php">
-<?php settings_fields('pv_settings'); ?>
-<table class="form-table">
+    <div class="wrap">
+        <h1>Pokémon Viewer</h1>
+        <form method="post" action="options.php">
+            <?php settings_fields('pap_settings'); ?>
+            <table class="form-table">
 
-<tr><th>Pokémon naam</th>
-<td><input type="text" name="pv_pokemon" value="<?php echo esc_attr(get_option('pv_pokemon', 'pikachu')); ?>"></td></tr>
+                <tr>
+                    <th>Pokemon naam</th>
+                    <td><input type="text" name="pap_pokemon" value="<?php echo esc_attr(get_option('pap_pokemon', 'pikachu')); ?>"></td>
+                </tr>
 
-<tr><th>Weergavemodus</th>
-<td>
-<select name="pv_mode">
-<option value="basic" <?php selected(get_option('pv_mode'),'basic'); ?>>Basic</option>
-<option value="stats" <?php selected(get_option('pv_mode'),'stats'); ?>>Stats</option>
-<option value="full" <?php selected(get_option('pv_mode'),'full'); ?>>Full</option>
-</select>
-</td></tr>
+                <tr>
+                    <th>Weergavemodus</th>
+                    <td>
+                        <select name="pap_mode">
+                            <option value="basic" <?php selected(get_option('pap_mode'), 'basic'); ?>>Basic</option>
+                            <option value="stats" <?php selected(get_option('pap_mode'), 'stats'); ?>>Stats</option>
+                            <option value="full" <?php selected(get_option('pap_mode'), 'full'); ?>>Full</option>
+                        </select>
+                    </td>
+                </tr>
 
-<tr><th>Toon afbeelding</th>
-<td><input type="checkbox" name="pv_show_image" value="1" <?php checked(1, get_option('pv_show_image')); ?>></td></tr>
+                <tr>
+                    <th>Toon afbeelding</th>
+                    <td><input type="checkbox" name="pap_show_image" value="1" <?php checked(1, get_option('pap_show_image')); ?>></td>
+                </tr>
 
-<tr><th>Max abilities</th>
-<td><input type="number" name="pv_max_abilities" value="<?php echo esc_attr(get_option('pv_max_abilities', 3)); ?>"></td></tr>
+                <tr>
+                    <th>Max abilities</th>
+                    <td><input type="number" name="pap_max_abilities" value="<?php echo esc_attr(get_option('pap_max_abilities', 3)); ?>"></td>
+                </tr>
 
-</table>
-<?php submit_button(); ?>
-</form>
-</div>
+            </table>
+            <?php submit_button(); ?>
+        </form>
+    </div>
 <?php }
 
-/* ========== API FUNCTIONS (zoals PowerPoint) ========== */
 
-function pv_get_pokemon_data($pokemon) {
+// API connection code
+function pap_get_pokemon_data($pokemon)
+{
     $url = "https://pokeapi.co/api/v2/pokemon/$pokemon";
     $response = wp_remote_get($url);
 
@@ -67,29 +90,35 @@ function pv_get_pokemon_data($pokemon) {
     return json_decode($body, true);
 }
 
-/* ========== SHORTCODE ========== */
+// shortcode code
 
-add_shortcode('pokemon_viewer', 'pv_shortcode');
-function pv_shortcode() {
+add_shortcode('pokemon_api_plugin', 'pap_shortcode');
+function pap_shortcode()
+{
+    $pokemon = strtolower(get_option('pap_pokemon', 'pikachu'));
+    $mode = get_option('pap_mode', 'basic');
+    $show_image = get_option('pap_show_image');
+    $max = intval(get_option('pap_max_abilities', 3));
 
-    $pokemon = strtolower(get_option('pv_pokemon', 'pikachu'));
-    $mode = get_option('pv_mode', 'basic');
-    $show_image = get_option('pv_show_image');
-    $max = intval(get_option('pv_max_abilities', 3));
+    $data = pap_get_pokemon_data($pokemon);
+    if (!$data) {
+    return "<div class='pokemon-viewer pokemon-error'>
+                <h2>❌ Pokémon niet gevonden</h2>
+                <p>Controleer de naam in de plugin instellingen.</p>
+            </div>";
+}
 
-    $data = pv_get_pokemon_data($pokemon);
-    if (!$data) return "Geen Pokémon gevonden.";
 
-    $output = "<div class='pokemon-viewer'><h2>".ucfirst($data['name'])."</h2>";
+    $output = "<div class='pokemon-viewer'><h2>" . ucfirst($data['name']) . "</h2>";
 
     if ($show_image) {
-        $output .= "<img src='".$data['sprites']['front_default']."'>";
+        $output .= "<img src='" . $data['sprites']['front_default'] . "'>";
     }
 
     if ($mode != 'basic') {
         $output .= "<h3>Stats</h3><ul>";
         foreach ($data['stats'] as $stat) {
-            $output .= "<li>".$stat['stat']['name'].": ".$stat['base_stat']."</li>";
+            $output .= "<li>" . $stat['stat']['name'] . ": " . $stat['base_stat'] . "</li>";
         }
         $output .= "</ul>";
     }
@@ -99,10 +128,10 @@ function pv_shortcode() {
         $i = 0;
         foreach ($data['abilities'] as $ab) {
             if (++$i > $max) break;
-            $output .= "<li>".$ab['ability']['name']."</li>";
+            $output .= "<li>" . $ab['ability']['name'] . "</li>";
         }
         $output .= "</ul>";
     }
 
-    return $output."</div>";
+    return $output . "</div>";
 }
