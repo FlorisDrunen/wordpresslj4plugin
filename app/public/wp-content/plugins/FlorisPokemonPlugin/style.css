@@ -70,3 +70,7 @@
     box-shadow: none;
 }
 
+.wp-block-post-title{
+    display: flex;
+    justify-content: center;
+}

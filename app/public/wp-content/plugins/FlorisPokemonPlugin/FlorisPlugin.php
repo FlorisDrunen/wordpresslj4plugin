@@ -6,7 +6,7 @@
 
 if (!defined('ABSPATH')) exit;
 
-// settings page code
+// css file loaden
 add_action('wp_enqueue_scripts', 'pap_load_styles');
 function pap_load_styles()
 {
@@ -16,7 +16,7 @@ function pap_load_styles()
     );
 }
 
-
+// settings page code
 add_action('admin_menu', 'pap_add_menu');
 function pap_add_menu()
 {
@@ -52,7 +52,7 @@ function pap_settings_page()
                     <th>Weergavemodus</th>
                     <td>
                         <select name="pap_mode">
-                            <option value="basic" <?php selected(get_option('pap_mode'), 'basic'); ?>>Basic</option>
+                            <option value="photo" <?php selected(get_option('pap_mode'), 'basic'); ?>>Photo</option>
                             <option value="stats" <?php selected(get_option('pap_mode'), 'stats'); ?>>Stats</option>
                             <option value="full" <?php selected(get_option('pap_mode'), 'full'); ?>>Full</option>
                         </select>
@@ -90,8 +90,8 @@ function pap_get_pokemon_data($pokemon)
 
 // shortcode code
 
-add_shortcode('pokemon_api_plugin', 'pap_shortcode');
-function pap_shortcode()
+add_shortcode('pokemon_api_plugin', 'mam_shortcode');
+function mam_shortcode()
 {
     $pokemon = strtolower(get_option('pap_pokemon', 'pikachu'));
     $mode = get_option('pap_mode', 'basic');
@@ -112,7 +112,7 @@ function pap_shortcode()
         $output .= "<img src='" . $data['sprites']['front_default'] . "'>";
     }
 
-    if ($mode != 'basic') {
+    if ($mode != 'photo') {
         $output .= "<h3>Stats</h3><ul>";
         foreach ($data['stats'] as $stat) {
             $output .= "<li>" . $stat['stat']['name'] . ": " . $stat['base_stat'] . "</li>";
